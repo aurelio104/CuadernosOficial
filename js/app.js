@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
           plane = document.createElement("a-video");
           plane.setAttribute("src", `#${videoId}`);
           plane.setAttribute("width", "1");
-          plane.setAttribute("height", "1.5");
+          plane.setAttribute("height", "1.4");
           plane.setAttribute("position", "0 0 0");
           plane.setAttribute("rotation", "0 0 0");
           target.appendChild(plane);
