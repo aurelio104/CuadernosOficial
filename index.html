@@ -11,20 +11,6 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/style.css" />
-  <style>
-    #marker-info {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.6);
-      color: white;
-      padding: 8px 12px;
-      font-size: 16px;
-      font-family: monospace;
-      z-index: 9999;
-      border-radius: 6px;
-    }
-  </style>
 
   <!-- A-Frame & MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
@@ -34,13 +20,27 @@
   <script src="js/app.js" defer></script>
 </head>
 <body>
+  <!-- Mensaje si no hay cámara -->
   <div id="cam-error">
     🚫 No se pudo acceder a la cámara. Revisa los permisos en tu navegador.
+  </div>
+
+  <!-- Loader animado estilo iOS -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <div class="loader-text">Cargando experiencia...</div>
   </div>
 
   <!-- HUD para ver qué marcador fue detectado -->
   <div id="marker-info">Marcador: ---</div>
 
+  <!-- Botón para activar sonido -->
+  <button id="enable-sound">🔊 Activar Sonido</button>
+
+  <!-- Sonido de clic al presionar el botón -->
+  <audio id="click-sound" src="assets/click.mp3" preload="auto"></audio>
+
+  <!-- Escena WebAR -->
   <a-scene
     mindar-image="imageTargetSrc: assets/targets.mind"
     embedded
@@ -64,11 +64,14 @@
       </template>
     </a-assets>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <!-- Cámara compatible MindAR -->
+    <a-entity mindar-camera>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    </a-entity>
 
+    <!-- Luces -->
     <a-entity light="type: ambient; intensity: 0.5"></a-entity>
     <a-entity light="type: point; intensity: 2; distance: 10; decay: 2; color: #ffddaa" position="0 2 2"></a-entity>
   </a-scene>
 </body>
 </html>
-
