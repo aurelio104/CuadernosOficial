@@ -4,18 +4,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const enableSoundBtn = document.getElementById("enable-sound");
   const clickSound = document.getElementById("click-sound");
   const loader = document.getElementById("loader");
+  const sonidoOverlay = document.getElementById("reactivar-sonido");
   const TOTAL_MARCADORES = 22;
 
   let soundEnabled = false;
 
-  // Verifica si el usuario ya activó el sonido anteriormente
   const soundEnabledPref = localStorage.getItem("sound-enabled");
   if (soundEnabledPref === "true") {
     soundEnabled = true;
     enableSoundBtn.style.display = "none";
   }
 
-  // Botón para activar sonido
   enableSoundBtn.addEventListener("click", () => {
     if (clickSound) clickSound.play().catch(() => {});
     soundEnabled = true;
@@ -23,12 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
     enableSoundBtn.style.display = "none";
   });
 
-  // Ocultar loader cuando la página haya cargado
   window.addEventListener("load", () => {
     if (loader) loader.style.display = "none";
   });
 
-  // Crear marcadores dinámicamente
   for (let i = 0; i < TOTAL_MARCADORES; i++) {
     const target = document.createElement("a-entity");
     target.setAttribute("mindar-image-target", `targetIndex: ${i}`);
@@ -62,35 +59,50 @@ document.addEventListener("DOMContentLoaded", () => {
           plane.setAttribute("rotation", "0 0 0");
           target.appendChild(plane);
 
-          // Intentar reproducir con sonido (si fue activado)
-          videoEl.play().catch(() => {
-            console.warn(`⚠️ No se pudo reproducir el video con sonido: ${videoSrc}`);
-            videoEl.muted = true;
-            videoEl.play().catch(() => {
-              console.warn(`🚫 Falla incluso con muted: ${videoSrc}`);
-            });
-          });
+          intentarReproducirVideo(videoEl);
         });
 
-        videoEl.load(); // Forzar preload
+        videoEl.load();
       } else {
         videoEl.muted = !soundEnabled;
-        videoEl.play().catch(() => {
-          console.warn(`⚠️ No se pudo reproducir el video con sonido: ${videoSrc}`);
-          videoEl.muted = true;
+        videoEl.load();
+        intentarReproducirVideo(videoEl);
+      }
+
+      // Acción si el usuario toca "Reactivar sonido"
+      if (sonidoOverlay) {
+        sonidoOverlay.onclick = () => {
+          sonidoOverlay.style.display = "none";
+          videoEl.muted = false;
+          videoEl.currentTime = 0;
           videoEl.play().catch(() => {
-            console.warn(`🚫 Falla incluso con muted: ${videoSrc}`);
+            console.warn(`🚫 Aún no se puede reproducir con audio.`);
           });
-        });
+        };
       }
     });
 
     target.addEventListener("targetLost", () => {
       console.log(`🕳️ Marcador perdido: targetIndex = ${i}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ---`;
-      if (videoEl) videoEl.pause();
+      if (videoEl) {
+        videoEl.pause();
+        videoEl.currentTime = 0;
+      }
     });
 
     scene.appendChild(target);
+  }
+
+  function intentarReproducirVideo(videoEl) {
+    videoEl.play().catch(() => {
+      console.warn(`⚠️ No se pudo reproducir con sonido. Probando sin sonido.`);
+      videoEl.muted = true;
+      videoEl.play().then(() => {
+        if (sonidoOverlay) sonidoOverlay.style.display = "block";
+      }).catch(() => {
+        console.warn(`🚫 Falla incluso en modo silencioso`);
+      });
+    });
   }
 });
