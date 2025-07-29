@@ -167,6 +167,8 @@ html, body, a-scene {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: max-content;
+  max-width: 90vw;
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -181,6 +183,8 @@ html, body, a-scene {
   transition: all 0.25s ease;
   z-index: 10001;
   display: none;
+  text-align: center;
+  white-space: nowrap;
 }
 
 #start-experience:hover {
