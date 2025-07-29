@@ -1,29 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
   const scene = document.querySelector("a-scene");
   const markerInfo = document.getElementById("marker-info");
-  const enableSoundBtn = document.getElementById("enable-sound");
   const clickSound = document.getElementById("click-sound");
   const loader = document.getElementById("loader");
   const sonidoOverlay = document.getElementById("reactivar-sonido");
+  const startBtn = document.getElementById("start-experience");
   const TOTAL_MARCADORES = 22;
 
   let soundEnabled = false;
+  let experienciaIniciada = false;
 
-  const soundEnabledPref = localStorage.getItem("sound-enabled");
-  if (soundEnabledPref === "true") {
-    soundEnabled = true;
-    enableSoundBtn.style.display = "none";
-  }
-
-  enableSoundBtn.addEventListener("click", () => {
-    if (clickSound) clickSound.play().catch(() => {});
-    soundEnabled = true;
-    localStorage.setItem("sound-enabled", "true");
-    enableSoundBtn.style.display = "none";
-  });
-
+  // Mostrar botón iniciar al cargar
   window.addEventListener("load", () => {
     if (loader) loader.style.display = "none";
+    if (startBtn) startBtn.style.display = "block";
+  });
+
+  // Al presionar "Iniciar experiencia"
+  startBtn.addEventListener("click", () => {
+    soundEnabled = true;
+    experienciaIniciada = true;
+    localStorage.setItem("sound-enabled", "true");
+    startBtn.style.display = "none";
+    if (clickSound) clickSound.play().catch(() => {});
   });
 
   for (let i = 0; i < TOTAL_MARCADORES; i++) {
@@ -36,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const videoSrc = `assets/videos/video${i + 1}.mp4`;
 
     target.addEventListener("targetFound", () => {
+      if (!experienciaIniciada) return;
+
       console.log(`✅ Marcador detectado: targetIndex = ${i}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ${i}`;
 
@@ -47,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
         videoEl.setAttribute("playsinline", true);
         videoEl.setAttribute("crossorigin", "anonymous");
         videoEl.style.display = "none";
-        videoEl.muted = !soundEnabled;
+        videoEl.muted = false; // ahora sí permitimos sonido
         document.body.appendChild(videoEl);
 
         videoEl.addEventListener("loadeddata", () => {
@@ -64,12 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         videoEl.load();
       } else {
-        videoEl.muted = !soundEnabled;
+        videoEl.muted = false;
         videoEl.load();
         intentarReproducirVideo(videoEl);
       }
 
-      // Acción si el usuario toca "Reactivar sonido"
       if (sonidoOverlay) {
         sonidoOverlay.onclick = () => {
           sonidoOverlay.style.display = "none";
@@ -83,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     target.addEventListener("targetLost", () => {
-      console.log(`🕳️ Marcador perdido: targetIndex = ${i}`);
       if (markerInfo) markerInfo.innerText = `Marcador: ---`;
       if (videoEl) {
         videoEl.pause();

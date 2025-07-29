@@ -161,3 +161,29 @@ html, body, a-scene {
   z-index: 10000;
   animation: fadeIn 0.5s ease;
 }
+
+#start-experience {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  padding: 16px 28px;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: -apple-system, "SF Pro", sans-serif;
+  cursor: pointer;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
+  z-index: 10001;
+  display: none;
+}
+
+#start-experience:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%) scale(1.05);
+}
